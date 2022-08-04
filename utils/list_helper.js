@@ -20,27 +20,27 @@ const mostBlogs = (blogs) => {
     const blogsSortedByAuthor = blogs.sort( (a, b) => a.author.localeCompare(b.author) ) 
 
     if (blogs.length > 1) {
-        let authorMostBlogs = ''
-        let numberOfBlogs = 0
+        let authorMostLikes = ''
+        let numberOfLikes = 0
 
         let memoryAuthor = blogs[0].author
-        let memoryBlog = 0
+        let memoryLikes = 0
         blogsSortedByAuthor.forEach( blog => {
-            if (blog.author === memoryAuthor) memoryBlog += 1
+            if (blog.author === memoryAuthor) memoryLikes += 1
             else { // 2 1 3
                 memoryAuthor = blog.author
-                memoryBlog = 1
+                memoryLikes = 1
             }
-            if (memoryBlog > numberOfBlogs) {
-                authorMostBlogs = memoryAuthor
-                numberOfBlogs = memoryBlog
+            if (memoryLikes > numberOfLikes) {
+                authorMostLikes = memoryAuthor
+                numberOfLikes = memoryLikes
             }
         })
 
         return(
             {
-                author: authorMostBlogs,
-                blogs: numberOfBlogs
+                author: authorMostLikes,
+                blogs: numberOfLikes
             }
         )
     } 
@@ -55,9 +55,50 @@ const mostBlogs = (blogs) => {
     else return null
 }
 
+const mostLikes = (blogs) => {
+    const blogsSortedByAuthor = blogs.sort( (a, b) => a.author.localeCompare(b.author) ) 
+
+    if (blogs.length > 1) {
+        let authorMostLikes = ''
+        let numberOfLikes = 0
+
+        let memoryAuthor = blogs[0].author
+        let memoryLikes = 0
+        blogsSortedByAuthor.forEach( blog => {
+            if (blog.author === memoryAuthor) memoryLikes += blog.likes
+            else {
+                memoryAuthor = blog.author
+                memoryLikes = blog.likes
+            }
+            if (memoryLikes > numberOfLikes) {
+                authorMostLikes = memoryAuthor
+                numberOfLikes = memoryLikes
+            }
+        })
+
+        return(
+            {
+                author: authorMostLikes,
+                likes: numberOfLikes
+            }
+        )
+    } 
+    else if (blogs.length === 1) {
+        return(
+            {
+                author: blogs[0].author,
+                likes: blogs[0].likes
+            }
+        )
+    }
+    else return null
+}
+
+
 module.exports = {
     dummy,
     totalLikes,
     favoriteBlog,
-    mostBlogs
+    mostBlogs,
+    mostLikes
 }
