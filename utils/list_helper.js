@@ -16,8 +16,48 @@ const favoriteBlog = (blogs) => {
     else return null
 }
 
+const mostBlogs = (blogs) => {
+    const blogsSortedByAuthor = blogs.sort( (a, b) => a.author.localeCompare(b.author) ) 
+
+    if (blogs.length > 1) {
+        let authorMostBlogs = ''
+        let numberOfBlogs = 0
+
+        let memoryAuthor = blogs[0].author
+        let memoryBlog = 0
+        blogsSortedByAuthor.forEach( blog => {
+            if (blog.author === memoryAuthor) memoryBlog += 1
+            else { // 2 1 3
+                memoryAuthor = blog.author
+                memoryBlog = 1
+            }
+            if (memoryBlog > numberOfBlogs) {
+                authorMostBlogs = memoryAuthor
+                numberOfBlogs = memoryBlog
+            }
+        })
+
+        return(
+            {
+                author: authorMostBlogs,
+                blogs: numberOfBlogs
+            }
+        )
+    } 
+    else if (blogs.length === 1) {
+        return(
+            {
+                author: blogs[0].author,
+                blogs: 1
+            }
+        )
+    }
+    else return null
+}
+
 module.exports = {
     dummy,
     totalLikes,
-    favoriteBlog
+    favoriteBlog,
+    mostBlogs
 }
