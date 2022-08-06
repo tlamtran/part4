@@ -9,10 +9,10 @@ const api = supertest(app)
 beforeEach(async () => {
     await Blog.deleteMany({})
 
-    const blogs = helper.initialBlogs
-        .map( blog => new Blog(blog))
-    const promiseArray = blogs.map( blog => blog.save())
-    await Promise.all(promiseArray)
+    for (let blog of helper.initialBlogs) {
+        let blogObject = new Blog(blog)
+        await blogObject.save()
+    }
 })
 
 test('blogs returned as JSON', async () => {
@@ -80,6 +80,18 @@ test('if created without like property, default=0', async () => {
 
     expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
     expect(blogs[2].likes).toBe(0)
+})
+
+test('400 if missing title and url', async () => {
+    const newBlog = {
+        author: "newAuthor",
+        likes: 0
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
 })
 
 afterAll(() => {
