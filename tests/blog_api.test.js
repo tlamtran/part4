@@ -37,8 +37,29 @@ test('correct content', async () => {
 test('every blog has unique id', async () => {
     const response = await api.get('/api/blogs')
     const blogs = response.body
-    
+
     blogs.forEach( blog => expect(blog.id).toBeDefined())
+})
+
+test('created a new blog post', async () => {
+    const newBlog = {
+        title: "newBlog",
+        author: "newAuthor",
+        url: "newURL",
+        likes: 0
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    const blogs = response.body
+
+    expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
+    expect(blogs[2].title).toBe("newBlog")
 })
 
 afterAll(() => {
