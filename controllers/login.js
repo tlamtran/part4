@@ -10,6 +10,14 @@ loginRouter.get('/', async (req, res) => {
 loginRouter.post('/', async (req, res) => {
     const {username, password, name} = req.body
     
+    if (!password || password.length < 3) {
+        return res.status(400).send({error: 'password min length 3'})
+    }
+    const existingUsername = await User.findOne({username})
+    if (existingUsername) {
+        return res.status(400).json({error: 'username must be unique'})
+    }
+    
     const saltRounds = 10
     const passwordHash = await bcryptjs.hash(password, saltRounds)
 
