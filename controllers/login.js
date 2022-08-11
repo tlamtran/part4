@@ -1,36 +1,30 @@
-const loginRouter = require('express').Router()
 const User = require('../models/User')
+const jwt = require('jsonwebtoken')
 const bcryptjs = require('bcryptjs')
+const loginRouter = require('express').Router()
 
-loginRouter.get('/', async (req, res) => {
-    const users = await User
-        .find({})
-        .populate('blogs', {title: 1, author: 1, url: 1, id: 1})
-    res.json(users)
-})
+loginRouter.post('/', async (request, response) => {
+    const {username, password} = request.body
 
-loginRouter.post('/', async (req, res) => {
-    const {username, password, name} = req.body
-    
-    if (!password || password.length < 3) {
-        return res.status(400).send({error: 'password min length 3'})
+    const user = await User.findOne({username})
+    const passwordCorrect = user === null
+        ? false
+        : await bcryptjs.compare(password, user.passwordHash)
+
+    if (!passwordCorrect || !user) {
+        response.status(401).json({error: 'invalid username or password'})
     }
-    const existingUsername = await User.findOne({username})
-    if (existingUsername) {
-        return res.status(400).json({error: 'username must be unique'})
+
+    const userForToken = {
+        username: user.username,
+        id: user._id
     }
-    
-    const saltRounds = 10
-    const passwordHash = await bcryptjs.hash(password, saltRounds)
 
-    const user = new User({
-        username,
-        passwordHash,
-        name
-    })
+    const token = jwt.sign(userForToken, process.env.SECRET)
 
-    const savedUser = await user.save()
-    res.status(201).json(savedUser)
+    response
+        .status(200)
+        .send({token, username: user.username, name: user.name})
 })
 
 module.exports = loginRouter
