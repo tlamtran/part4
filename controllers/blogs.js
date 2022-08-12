@@ -1,22 +1,36 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/Blog')
 const User = require('../models/User')
+const jwt = require('jsonwebtoken')
 
-blogsRouter.get('/', async (req, res) => {
+const getTokenFrom = (request) => {
+    const authorization = request.get('authorization')
+    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+        return authorization.substring(7)
+    }
+    else return null
+}
+
+blogsRouter.get('/', async (request, response) => {
     const blogs = await Blog
         .find({username: 'usernames'})
         .populate('user', {username: 1, name: 1, id: 1})
-    res.json(blogs)
+    response.json(blogs)
 })
 
-blogsRouter.get('/:id', async (req, res) => {
-    const blog = await Blog.findById(req.params.id)
-    res.json(blog)
+blogsRouter.get('/:id', async (request, response) => {
+    const blog = await Blog.findById(request.params.id)
+    response.json(blog)
 })
   
-blogsRouter.post('/', async (req, res) => {
-    const body = req.body
-    const user = await User.findOne({})
+blogsRouter.post('/', async (request, response) => {
+    const body = request.body
+    const token = getTokenFrom(request)
+    const verifiedToken = jwt.verify(token, process.env.SECRET)
+    if (!verifiedToken.id) {
+        return response.status(401).json({error: 'token missing or invalid'})
+    }
+    const user = await User.findById(verifiedToken.id)
 
     const blog = new Blog({
         url: body.url,
@@ -30,16 +44,16 @@ blogsRouter.post('/', async (req, res) => {
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
 
-    res.status(201).json(savedBlog)
+    response.status(201).json(savedBlog)
 })
 
-blogsRouter.delete('/:id', async (req, res) => {
-    await Blog.findByIdAndDelete(req.params.id)
-    res.status(204).end()
+blogsRouter.delete('/:id', async (request, response) => {
+    await Blog.findByIdAndDelete(request.params.id)
+    response.status(204).end()
 })
 
-blogsRouter.put('/:id', async (req, res) => {
-    const body = req.body
+blogsRouter.put('/:id', async (request, response) => {
+    const body = request.body
     const blog = {
         title: body.title,
         author: body.author,
@@ -47,8 +61,8 @@ blogsRouter.put('/:id', async (req, res) => {
         likes: body.likes
     }
 
-    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, blog, {new: true, runValidators: true})
-    res.json(updatedBlog)
+    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {new: true, runValidators: true})
+    response.json(updatedBlog)
 })
 
 
