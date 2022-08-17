@@ -40,8 +40,18 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
-    await Blog.findByIdAndDelete(request.params.id)
-    response.status(204).end()
+    const verifiedToken = jwt.verify(request.token, process.env.SECRET)
+    const userID = verifiedToken.id
+    console.log(userID)
+
+    const blog = await Blog.findById(request.params.id)
+    if (blog.user.toString() === userID.toString()) {
+        await Blog.findByIdAndDelete(request.params.id)
+        response.status(204).end()
+    }
+    else {
+        return response.status(401).json({error: 'wrong user, no permission to delete'})
+    }
 })
 
 blogsRouter.put('/:id', async (request, response) => {
