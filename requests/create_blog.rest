@@ -1,10 +1,10 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJuYW1lIiwiaWQiOiI2MmY1MjIwMTgzM2YzMDVlMzM1NTRhYWMiLCJpYXQiOjE2NjAyOTM4NTYsImV4cCI6MTY2MDI5NzQ1Nn0.KK7HKpLz1hQcyhSi3roNDIcy0Xz5HRTiYwk2Np6CFlQ
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJuYW1lMSIsImlkIjoiNjJmNTIyMDc4MzNmMzA1ZTMzNTU0YWFmIiwiaWF0IjoxNjYwNTY4NzU4LCJleHAiOjE2NjA1NzIzNTh9.uEY0eJRRhwJKq4oyEMnzQsXbhf6mL4Dsm_tV8fzyvrY
 
 {
-    "title": "title5",
-    "author": "author5",
-    "url": "url5",
-    "likes": 5
+    "title": "new",
+    "author": "new",
+    "url": "new",
+    "likes": 1111
 }
