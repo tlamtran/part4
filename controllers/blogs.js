@@ -35,10 +35,13 @@ blogsRouter.post('/', async (request, response) => {
 
 blogsRouter.delete('/:id', async (request, response) => {
     const user = request.user
+    const blogID = request.params.id
 
-    const blog = await Blog.findById(request.params.id)
+    const blog = await Blog.findById(blogID)
     if (blog.user.toString() === user.id.toString()) {
-        await Blog.findByIdAndDelete(request.params.id)
+        await Blog.findByIdAndDelete(blogID)
+        user.blogs = user.blogs.filter( blog => blog.toString() !== blogID)
+        user.save()
         response.status(204).end()
     }
     else {
